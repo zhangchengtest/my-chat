@@ -7,6 +7,7 @@ import config from './config'; // 导入配置文件
 const Chat = () => {
     const [messages, setMessages] = useState([])
     const [inputText, setInputText] = useState('')
+    const [roomId, setRoomId] = useState('1001')
     const chatBoxRef = useRef(null)
 
     const webSocketRef = useRef(null);
@@ -23,7 +24,7 @@ const Chat = () => {
         webSocketRef.current = new WebSocket(config.websocketUrl);
         
         webSocketRef.current.onopen = () => {
-          webSocketRef.current.send(JSON.stringify({ action: 'join',userId: userId ,roomId: '1001' }));
+          webSocketRef.current.send(JSON.stringify({ action: 'join',userId: userId ,roomId: roomId }));
         };
 
         return () => {
@@ -57,7 +58,7 @@ const Chat = () => {
         const messageObj = {
             id:  Math.random().toString(36),
             userId: userId,
-            roomId: '1001',
+            roomId: roomId,
             content: inputText.trim(),
             isSelf: true,
             action: "send",
@@ -83,7 +84,7 @@ const Chat = () => {
         <div className="container">
             <div className="wrapper">
                 <div className="chatbox">
-                    <div className="title">Title</div>
+                    <div className="title">{roomId}</div>
                     <div className="content">
                         {messages.map(message => (
                             <div key={message.id} className={`message ${message.isSelf ? 'self' : ''}`}>
