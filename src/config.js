@@ -1,11 +1,16 @@
-// config.js
-let config;
-if (process.env.REACT_APP_ENV === 'production') {
-    console.log(process.env.REACT_APP_ENV+'aaa')
-  config = require('./config.production').default;
-} else {
-    console.log(process.env.REACT_APP_ENV+'bbb')
-  config = require('./config.development').default;
-}
+const env = process.env.REACT_APP_ENV || 'development';
 
-export default config;
+const config = {
+  development: {
+    apiUrl: 'http://localhost:3000',
+    websocketUrl: 'ws://localhost:8080/chat'
+  },
+  production: {
+    apiUrl: 'https://api.example.com',
+    websocketUrl: 'ws://chat.punengshuo.com/chat'
+  }
+};
+
+const currentConfig = config[env];
+
+export default currentConfig;
