@@ -20,6 +20,7 @@ interface WebSocketWithStatus extends WebSocket {
     timestamp: string
   }
 const Chat = () => {
+    const [historyMessages, setHistoryMessages] = useState<Message[]>([])
     const [messages, setMessages] = useState<Message[]>([])
     const [inputText, setInputText] = useState('')
     const [roomId, setRoomId] = useState('1001')
@@ -62,21 +63,18 @@ const Chat = () => {
 
     useEffect(() => {
 
+        // 发送请求获取历史聊天记录
+        const getHistoryMsg = async () => {
+          const res = await fetch(config.apiUrl+'/roomChats/page?roomId=1001&pageSize=100')
+          const data = await res.json()
+          setHistoryMessages(data.data.list)
+        
+        }
+        getHistoryMsg()
+
         connectWebSocket(config.websocketUrl);
       }, []);
    
-
-    useEffect(() => {
-        if (webSocketRef.current) {
-          webSocketRef.current.onmessage = event => {
-            const message = JSON.parse(event.data)
-            console.log(event.data)
-            setMessages([...messages, message])
-          };
-        }
-      }, [webSocketRef, messages]);
-    
-
     const sendMessage = () => {
         if (inputText.trim() === '') {
             return
@@ -98,6 +96,15 @@ const Chat = () => {
         setInputText('')
     }
 
+    useEffect(() => {
+      if (webSocketRef.current) {
+        webSocketRef.current.onmessage = event => {
+          const message = JSON.parse(event.data)
+          console.log(event.data)
+          setMessages([...messages, message])
+        };
+      }
+    }, [webSocketRef, messages]);
 
     const mockMessages = [
         { id: 1, isSelf: false, avatarUrl: 'https://i.pravatar.cc/150?img=1', content: 'Hello, how are you?' },
@@ -113,6 +120,16 @@ const Chat = () => {
                 <div className="chatbox">
                     <div className="title">{roomId}</div>
                     <div className="content">
+                    {historyMessages.map(message => (
+                            <div key={message.id} className={`message ${message.isSelf ? 'self' : ''}`}>
+                                <div className="avatar">
+                                    <img src={logo} alt="avatar" />
+                                </div>
+                                <div className="speech-bubble">
+                                    <Markdown content={message.content} />
+                                </div>
+                            </div>
+                        ))}
                         {messages.map(message => (
                             <div key={message.id} className={`message ${message.isSelf ? 'self' : ''}`}>
                                 <div className="avatar">

@@ -6,7 +6,7 @@ const config = {
     websocketUrl: 'ws://localhost:8080/chat'
   },
   production: {
-    apiUrl: 'https://api.example.com',
+    apiUrl: 'https://chengapi.yufu.pub/openapi',
     websocketUrl: 'ws://chat.punengshuo.com/chat'
   }
 };
